@@ -1,0 +1,22 @@
+{
+  "name": "venture-scout",
+  "version": "1.0.0",
+  "description": "A platform for discovering, tracking, and analyzing startup investment opportunities",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "test": "node --test tests/",
+    "db:migrate": "node scripts/migrate.js",
+    "lint": "eslint src/"
+  },
+  "keywords": [
+    "venture-capital",
+    "startups",
+    "investment",
+    "deal-flow",
+    "portfolio-management"
+  ],
+  "author": "",
+  "license": "MIT"
+}
