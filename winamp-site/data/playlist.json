@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "filename": "about_shawn.txt",
+    "section": "about",
+    "duration": "2:42"
+  },
+  {
+    "id": 2,
+    "filename": "essays.txt",
+    "section": "essays",
+    "duration": "8:07"
+  },
+  {
+    "id": 3,
+    "filename": "systemic_thesis.txt",
+    "section": "systemic_thesis",
+    "duration": "12:33"
+  },
+  {
+    "id": 4,
+    "filename": "portfolio.txt",
+    "section": "portfolio",
+    "duration": "5:19"
+  },
+  {
+    "id": 5,
+    "filename": "projects.txt",
+    "section": "projects",
+    "duration": "6:44"
+  },
+  {
+    "id": 6,
+    "filename": "contact.txt",
+    "section": "contact",
+    "duration": "1:00"
+  }
+]

@@ -1,0 +1,58 @@
+import { Skin } from "@/types";
+
+export const skins: Skin[] = [
+  {
+    id: "classic",
+    name: "Classic",
+    colors: {
+      bg: "#1a1a2e",
+      bgSecondary: "#16213e",
+      titleBar: "#0f3460",
+      accent: "#00ff41",
+      accentHover: "#00cc33",
+      text: "#00ff41",
+      textDim: "#4a9960",
+      border: "#0f3460",
+      buttonBg: "#0f3460",
+      buttonText: "#00ff41",
+      trackHighlight: "#0f3460",
+      visualizer: ["#00ff41", "#00cc33", "#009922"],
+    },
+  },
+  {
+    id: "midnight",
+    name: "Midnight",
+    colors: {
+      bg: "#0d0d0d",
+      bgSecondary: "#1a1a1a",
+      titleBar: "#2d1b69",
+      accent: "#c084fc",
+      accentHover: "#a855f7",
+      text: "#e9d5ff",
+      textDim: "#7c3aed",
+      border: "#2d1b69",
+      buttonBg: "#2d1b69",
+      buttonText: "#e9d5ff",
+      trackHighlight: "#1e0a4a",
+      visualizer: ["#c084fc", "#a855f7", "#7c3aed"],
+    },
+  },
+  {
+    id: "amber",
+    name: "Amber",
+    colors: {
+      bg: "#1a1000",
+      bgSecondary: "#2a1a00",
+      titleBar: "#4a2e00",
+      accent: "#ffb300",
+      accentHover: "#ff9500",
+      text: "#ffcc44",
+      textDim: "#996600",
+      border: "#4a2e00",
+      buttonBg: "#4a2e00",
+      buttonText: "#ffcc44",
+      trackHighlight: "#3a2200",
+      visualizer: ["#ffb300", "#ff9500", "#cc7700"],
+    },
+  },
+];
