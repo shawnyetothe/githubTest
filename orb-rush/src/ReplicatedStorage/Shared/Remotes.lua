@@ -30,5 +30,7 @@ Remotes.PromptGamePass = getRemote("PromptGamePass", "RemoteEvent")
 Remotes.StateUpdate = getRemote("StateUpdate", "RemoteEvent")
 Remotes.Toast = getRemote("Toast", "RemoteEvent")
 Remotes.CashPop = getRemote("CashPop", "RemoteEvent")
+Remotes.ShowShopNudge = getRemote("ShowShopNudge", "RemoteEvent")
+Remotes.DismissNudge = getRemote("DismissNudge", "RemoteEvent")
 
 return Remotes

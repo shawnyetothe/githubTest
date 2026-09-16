@@ -18,29 +18,25 @@ Magnet-collect orbs → upgrade → rebirth → monetize. Built for **daily micr
 | Repeat spend | Cash packs (Dev Products) |
 | Shareable clip | Rebirth + rare neon orbs |
 
-## Studio install (no Rojo required)
+## Studio install (fastest: one paste)
 
-1. Open Roblox Studio → **New Baseplate** (delete the baseplate part if you want; the game spawns its own arena).  
-2. In **ReplicatedStorage**, create Folder `Shared`, add ModuleScripts:
-   - `Config` ← paste `src/ReplicatedStorage/Shared/Config.lua`
-   - `Remotes` ← paste `src/ReplicatedStorage/Shared/Remotes.lua`
-3. In **ServerScriptService**, add:
-   - ModuleScript `PlayerData`
-   - ModuleScript `Monetization`
-   - ModuleScript `OrbWorld`
-   - Script `Main` ← paste `Main.server.lua` (name it `Main`)
-4. In **StarterPlayer → StarterPlayerScripts**, add LocalScript `Hud` ← paste `Hud.client.lua`.  
-5. **Game Settings → Security**: enable **Allow HTTP** only if needed later; enable **API Services** (DataStores) for published game.  
-6. Press **Play**. Walk into glowing orbs; open the shop on the right.
+1. Roblox Studio → **New Baseplate**
+2. **Game Settings → Security → Enable Studio Access to API Services**
+3. Insert a **Script** into `ServerScriptService`
+4. Paste the entire contents of [`StudioPaste/InstallOrbRush.server.lua`](./StudioPaste/InstallOrbRush.server.lua)
+5. Press **Play** once (installer writes all modules, then disables itself)
+6. Stop → **delete** the installer script → Play again
 
-### Rojo (optional)
+Regenerate the installer after code changes:
 
 ```bash
-cd orb-rush
-rojo serve
+python3 tools/generate_installer.py
 ```
 
-Connect from the Rojo Studio plugin.
+### Manual / Rojo install
+
+See module list below, or `rojo serve` with `default.project.json`.
+
 
 ## Monetization setup (required for real Robux)
 
@@ -60,14 +56,16 @@ Paste the numeric IDs into `Config.lua`. Until IDs are set, shop buttons show a 
 
 ## Publish checklist (today)
 
-- [ ] Place name: `Orb Rush` (or your brand)  
-- [ ] Icon: bright neon orb on dark ground (reads at mobile thumbnail size)  
-- [ ] Description: `Collect orbs. Upgrade your magnet. Rebirth for insane multipliers!`  
-- [ ] Genre tags: Simulation, Casual  
-- [ ] Enable paid access **off**; use passes/products only  
-- [ ] Create passes/products → paste IDs  
-- [ ] Publish → play on phone once  
-- [ ] Record 15s rebirth clip → post to TikTok / IG Reels / YouTube Shorts with link  
+Follow **[`PUBLISH.md`](./PUBLISH.md)** for listing copy, thumbnail prompts, and the 60-minute launch plan.
+
+Social captions: [`marketing/SOCIAL_COPY.md`](./marketing/SOCIAL_COPY.md)
+
+Quick checks:
+- [ ] One-paste install works in Solo Play
+- [ ] Magnet aura visible; leaderboards spawn near arena
+- [ ] Pass/product IDs in `Config.lua`
+- [ ] First rebirth shows 2× Cash nudge
+- [ ] Publish + one 15s clip 
 
 ## Growth loop (daily money)
 

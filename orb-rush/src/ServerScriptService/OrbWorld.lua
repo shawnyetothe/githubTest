@@ -12,7 +12,9 @@ local Monetization = require(script.Parent:WaitForChild("Monetization"))
 local OrbWorld = {}
 
 local folder
-local orbs = {} -- [part] = { tier = table, value = number }
+local orbs = {} -- [part] = meta
+local orbCount = 0
+local combos = {} -- [player] = { count = n, expires = clock }
 
 local function pickTier()
 	local total = 0
@@ -49,6 +51,19 @@ local function ensureArena()
 	floor.Color = Color3.fromRGB(28, 34, 48)
 	floor.Parent = arena
 
+	-- Grid accent strips
+	for i = -2, 2 do
+		local strip = Instance.new("Part")
+		strip.Anchored = true
+		strip.CanCollide = false
+		strip.Size = Vector3.new(Config.ArenaRadius * 2, 0.15, 0.6)
+		strip.Position = Vector3.new(0, 0.6, i * 18)
+		strip.Material = Enum.Material.Neon
+		strip.Color = Color3.fromRGB(40, 90, 140)
+		strip.Transparency = 0.55
+		strip.Parent = arena
+	end
+
 	local spawn = Instance.new("SpawnLocation")
 	spawn.Name = "Spawn"
 	spawn.Anchored = true
@@ -60,7 +75,6 @@ local function ensureArena()
 	spawn.Color = Color3.fromRGB(80, 200, 255)
 	spawn.Parent = arena
 
-	-- Soft boundary ring
 	local ring = Instance.new("Part")
 	ring.Name = "Boundary"
 	ring.Anchored = true
@@ -85,11 +99,17 @@ local function ensureArena()
 	label.Font = Enum.Font.GothamBlack
 	label.Parent = decalHint
 
+	-- Lighting mood (best-effort)
+	local lighting = game:GetService("Lighting")
+	lighting.Ambient = Color3.fromRGB(40, 50, 70)
+	lighting.Brightness = 2
+	lighting.ClockTime = 20.5
+
 	return arena
 end
 
 local function spawnOrb()
-	if #orbs >= Config.MaxOrbs then
+	if orbCount >= Config.MaxOrbs then
 		return
 	end
 
@@ -110,17 +130,19 @@ local function spawnOrb()
 	part.Parent = folder
 
 	local light = Instance.new("PointLight")
-	light.Brightness = 1.2
-	light.Range = 10
+	light.Brightness = tier.colorIndex >= 3 and 2 or 1.2
+	light.Range = tier.colorIndex >= 3 and 14 or 10
 	light.Color = part.Color
 	light.Parent = part
 
-	orbs[part] = { tier = tier, valueMult = tier.mult }
+	orbs[part] = { tier = tier, valueMult = tier.mult, colorIndex = tier.colorIndex }
+	orbCount += 1
 	Debris:AddItem(part, Config.OrbLifetime)
 
 	part.AncestryChanged:Connect(function(_, parent)
-		if not parent then
+		if not parent and orbs[part] ~= nil then
 			orbs[part] = nil
+			orbCount = math.max(0, orbCount - 1)
 		end
 	end)
 end
@@ -144,12 +166,54 @@ local function magnetStats(player)
 	return range, pull, value, speed
 end
 
+local function updateMagnetAura(character, range)
+	local root = character:FindFirstChild("HumanoidRootPart")
+	if not root then
+		return
+	end
+	local aura = character:FindFirstChild("MagnetAura")
+	if not aura then
+		aura = Instance.new("Part")
+		aura.Name = "MagnetAura"
+		aura.Shape = Enum.PartType.Cylinder
+		aura.Anchored = false
+		aura.CanCollide = false
+		aura.CanQuery = false
+		aura.CanTouch = false
+		aura.Massless = true
+		aura.Material = Enum.Material.ForceField
+		aura.Color = Color3.fromRGB(80, 200, 255)
+		aura.Transparency = 0.75
+		aura.Parent = character
+		local weld = Instance.new("Weld")
+		weld.Part0 = root
+		weld.Part1 = aura
+		weld.C0 = CFrame.Angles(0, 0, math.rad(90))
+		weld.Parent = aura
+	end
+	local diameter = range * 2
+	aura.Size = Vector3.new(0.3, diameter, diameter)
+end
+
+local function bumpCombo(player)
+	local now = os.clock()
+	local c = combos[player]
+	if not c or now > c.expires then
+		c = { count = 0, expires = now }
+		combos[player] = c
+	end
+	c.count += 1
+	c.expires = now + (Config.ComboWindow or 1.25)
+	return c.count
+end
+
 local function collectOrb(player, part)
 	local meta = orbs[part]
 	if not meta then
 		return
 	end
 	orbs[part] = nil
+	orbCount = math.max(0, orbCount - 1)
 	part:Destroy()
 
 	local data = PlayerData.Get(player)
@@ -159,10 +223,23 @@ local function collectOrb(player, part)
 
 	local _, _, orbValue = magnetStats(player)
 	local passes = Monetization.GetPasses(player)
-	local gain = math.max(1, math.floor(orbValue * meta.valueMult * PlayerData.CashMultiplier(player, passes.DoubleCash)))
+	local combo = bumpCombo(player)
+	local comboMult = 1 + math.min(0.5, (combo - 1) * 0.02)
+	local gain = math.max(1, math.floor(orbValue * meta.valueMult * PlayerData.CashMultiplier(player, passes.DoubleCash) * comboMult))
 	data.Cash += gain
 	data.TotalCollected += 1
+
+	if meta.colorIndex >= 4 then
+		Remotes.Toast:FireClient(player, "EPIC ORB!")
+	elseif meta.colorIndex >= 3 then
+		Remotes.Toast:FireClient(player, "Rare orb!")
+	end
+	if combo > 0 and combo % 25 == 0 then
+		Remotes.Toast:FireClient(player, string.format("%dx COMBO!", combo))
+	end
+
 	Remotes.CashPop:FireClient(player, gain)
+	-- Push state every collect so HUD cash stays live (player count is small for MVP)
 	Monetization.PushState(player)
 end
 
@@ -171,8 +248,9 @@ function OrbWorld.ApplyCharacterStats(player, character)
 	if not hum then
 		return
 	end
-	local _, _, _, speed = magnetStats(player)
+	local range, _, _, speed = magnetStats(player)
 	hum.WalkSpeed = speed
+	updateMagnetAura(character, range)
 end
 
 function OrbWorld.Init()
@@ -188,6 +266,19 @@ function OrbWorld.Init()
 		while true do
 			spawnOrb()
 			task.wait(Config.OrbSpawnInterval)
+		end
+	end)
+
+	-- Periodic aura refresh (upgrade changes)
+	task.spawn(function()
+		while true do
+			task.wait(1)
+			for _, player in ipairs(Players:GetPlayers()) do
+				if player.Character then
+					local range = magnetStats(player)
+					updateMagnetAura(player.Character, range)
+				end
+			end
 		end
 	end)
 
@@ -218,5 +309,9 @@ function OrbWorld.Init()
 		end
 	end)
 end
+
+Players.PlayerRemoving:Connect(function(player)
+	combos[player] = nil
+end)
 
 return OrbWorld

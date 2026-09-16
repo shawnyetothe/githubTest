@@ -23,6 +23,7 @@ local function defaultData()
 		LastDailyDay = 0,
 		TotalCollected = 0,
 		HasRebirthedOnce = false,
+		ShopNudgeShown = false,
 		ProcessedReceipts = {},
 	}
 end
@@ -136,7 +137,10 @@ function PlayerData.StatSnapshot(player, passOwned)
 		canClaimDaily = data.LastDailyDay ~= todayKey(),
 		totalCollected = data.TotalCollected,
 		passes = passOwned or { DoubleCash = false, VipMagnet = false },
-		showShopNudge = data.HasRebirthedOnce == true,
+		showShopNudge = Config.ShopNudgeEnabled
+			and data.HasRebirthedOnce == true
+			and data.ShopNudgeShown ~= true
+			and not (passOwned and passOwned.DoubleCash),
 	}
 end
 

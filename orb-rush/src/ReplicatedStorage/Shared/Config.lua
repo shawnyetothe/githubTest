@@ -36,6 +36,12 @@ Config.DailyBonusBase = 50
 Config.DailyBonusPerStreak = 25
 Config.MaxDailyStreak = 14
 
+-- Combo window (seconds between collects to keep streak)
+Config.ComboWindow = 1.25
+
+-- Soft shop nudge: show once after first rebirth until dismissed this session
+Config.ShopNudgeEnabled = true
+
 --[[
 	MONETIZATION — create these in Creator Dashboard → Monetization
 	Game Passes (one-time):

@@ -298,4 +298,66 @@ buyLarge.MouseButton1Click:Connect(function()
 	Remotes.PromptProduct:FireServer("CashLarge")
 end)
 
+-- Soft shop nudge modal (after first rebirth)
+local nudge = Instance.new("Frame")
+nudge.Name = "ShopNudge"
+nudge.Visible = false
+nudge.Size = UDim2.fromOffset(320, 180)
+nudge.Position = UDim2.fromScale(0.5, 0.5)
+nudge.AnchorPoint = Vector2.new(0.5, 0.5)
+nudge.BackgroundColor3 = Color3.fromRGB(16, 20, 32)
+nudge.Parent = gui
+corner(nudge, 14)
+
+local nudgeTitle = Instance.new("TextLabel")
+nudgeTitle.Size = UDim2.new(1, -24, 0, 36)
+nudgeTitle.Position = UDim2.fromOffset(12, 12)
+nudgeTitle.BackgroundTransparency = 1
+nudgeTitle.Font = Enum.Font.GothamBlack
+nudgeTitle.TextSize = 20
+nudgeTitle.TextColor3 = Color3.new(1, 1, 1)
+nudgeTitle.TextXAlignment = Enum.TextXAlignment.Left
+nudgeTitle.Text = "Double your grind?"
+nudgeTitle.Parent = nudge
+
+local nudgeBody = Instance.new("TextLabel")
+nudgeBody.Size = UDim2.new(1, -24, 0, 48)
+nudgeBody.Position = UDim2.fromOffset(12, 52)
+nudgeBody.BackgroundTransparency = 1
+nudgeBody.Font = Enum.Font.Gotham
+nudgeBody.TextSize = 15
+nudgeBody.TextColor3 = Color3.fromRGB(200, 210, 230)
+nudgeBody.TextXAlignment = Enum.TextXAlignment.Left
+nudgeBody.TextWrapped = true
+nudgeBody.Text = "You just rebirthed. 2x Cash permanently doubles every orb — best first purchase."
+nudgeBody.Parent = nudge
+
+local nudgeBuy = mkButton(nudge, "NudgeBuy", "Get 2x Cash", Color3.fromRGB(220, 160, 40))
+nudgeBuy.Position = UDim2.fromOffset(12, 118)
+nudgeBuy.Size = UDim2.new(0.55, -16, 0, 40)
+
+local nudgeSkip = mkButton(nudge, "NudgeSkip", "Maybe later", Color3.fromRGB(50, 56, 72))
+nudgeSkip.Position = UDim2.fromOffset(12 + nudgeBuy.AbsoluteSize.X, 118)
+nudgeSkip.Size = UDim2.new(0.45, -8, 0, 40)
+nudgeSkip.Position = UDim2.new(0.55, 0, 0, 118)
+
+local function hideNudge()
+	nudge.Visible = false
+	Remotes.DismissNudge:FireServer()
+end
+
+nudgeBuy.MouseButton1Click:Connect(function()
+	nudge.Visible = false
+	Remotes.PromptGamePass:FireServer("DoubleCash")
+	Remotes.DismissNudge:FireServer()
+end)
+nudgeSkip.MouseButton1Click:Connect(hideNudge)
+
+Remotes.ShowShopNudge.OnClientEvent:Connect(function()
+	nudge.Visible = true
+	shop.Visible = true
+	shopOpen = true
+	toggleBtn.Text = "Hide Shop"
+end)
+
 showToast("Welcome to Orb Rush — collect orbs!")
