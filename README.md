@@ -1,7 +1,13 @@
 # githubTest
 
-## Orb Rush (Roblox)
+## Rush Plaza (Roblox)
 
-Ship-today mini simulator for daily micro-Robux:
+Ten mini-games in one place, built from current genre odds (simulation, garden, tycoon, shopping, obby, co-op extract, sports, rhythm, narrative):
 
-→ [`orb-rush/`](./orb-rush/) — research, Luau source, Studio install guide
+→ [`arcade/`](./arcade/)
+
+## Orb Rush
+
+Single-game magnet simulator kit:
+
+→ [`orb-rush/`](./orb-rush/)
